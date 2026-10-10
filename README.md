@@ -35,6 +35,17 @@ npm run dev
 
 Open the address it prints, join with your trip code and name, then go to **Info → Settings** and unlock admin with the PIN.
 
+### 2b. Or run everything locally, in Docker
+
+To try changes without touching the real trip, run the backend on your own computer. You need Docker Desktop and the Supabase CLI.
+
+```bash
+npm run local:up      # start the local backend
+npm run dev:local     # start the app, then open http://localhost:5180
+```
+
+Join with the trip code from `supabase/seed.sql`. See [docs/local-development.md](docs/local-development.md) for the other commands and how to try each feature.
+
 ### 3. Push notifications (chat + Bolleke)
 
 1. Generate a key pair: `npx web-push generate-vapid-keys`
@@ -110,6 +121,9 @@ src/
 supabase/
   migrations/0001_init.sql   tables, security rules, join/admin functions
   seed.sql                   sample trip (placeholders)
+  seed.local.sql             extra setup for the local Docker stack only
+  config.toml                settings of the local Docker stack
+scripts/local.sh             starts and stops the local Docker stack
   migrations/0002_…          later additions, run in order
   functions/notify/          sends push notifications for chat and Bolleke
   functions/tick/            timed notifications (morning summary, reminders), run by a schedule

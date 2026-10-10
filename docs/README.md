@@ -11,6 +11,7 @@ A trip app for a group of friends on a 20-day China trip. It's a PWA (a web app 
 | [offline.md](offline.md) | What works without signal and how it is cached |
 | [security.md](security.md) | Who can read and write what |
 | [frontend.md](frontend.md) | The React code: screens, state and libraries |
+| [local-development.md](local-development.md) | Running the whole backend on your computer in Docker |
 
 ## The app in one picture
 

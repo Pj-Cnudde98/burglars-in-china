@@ -18,6 +18,8 @@ const TABS: { id: Tab; g: string; label: string }[] = [
   { id: 'food', g: '食', label: 'Food' },
   { id: 'info', g: '更', label: 'Info' }
 ]
+// True when started with `npm run dev:local`: the backend is the Docker stack on this computer.
+const LOCAL = import.meta.env.MODE === 'docker'
 const INFO_SUBS = ['hotels', 'transport', 'money', 'chat', 'album', 'translate', 'settings']
 
 // Hash routes: #today, #plan, #map, #food, #info, #chat, #hotels, ...
@@ -55,7 +57,7 @@ export default function App() {
                 <div className="seal" aria-hidden="true">贼</div>
                 <div className="grow">
                   <h1>{data.trip?.name ?? 'Burglars in China'}</h1>
-                  <div className="sub">{data.members.length ? `${data.members.length} travellers` : 'Loading…'}{session.isAdmin ? ' · admin' : ''}</div>
+                  <div className="sub">{data.members.length ? `${data.members.length} travellers` : 'Loading…'}{session.isAdmin ? ' · admin' : ''}{LOCAL ? ' · local database' : ''}</div>
                 </div>
                 <span className="chip off" title={syncedAt ? `Last synced ${new Date(syncedAt).toLocaleString()}` : ''}><span className="dot" />{online ? 'Offline ready' : 'Offline'}</span>
               </header>
