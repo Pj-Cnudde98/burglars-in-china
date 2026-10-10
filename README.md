@@ -51,9 +51,9 @@ Open the address it prints, join with your trip code and name, then go to **Info
    - Type **Supabase Edge Functions**, function `notify`
    - Add the HTTP header `x-webhook-secret` with the same `WEBHOOK_SECRET` value
 
-### 3b. Morning summary
+### 3b. Morning summary and reminders
 
-Every trip day at 08:00 China time, everyone gets a notification with the city, the weather and the day's plan.
+Every trip day at 08:00 China time, everyone gets a notification with the city, the weather and the day's plan. Everyone also gets a reminder 3 hours before a flight, 1 hour before a train, 45 minutes before a bus, and 30 minutes before a planned event that has a start time.
 
 1. Deploy the function: `supabase functions deploy tick --no-verify-jwt`
 2. In the **SQL Editor**, store the two values the schedule needs (replace both placeholders):
@@ -106,6 +106,6 @@ supabase/
   seed.sql                   sample trip (placeholders)
   migrations/0002_…          later additions, run in order
   functions/notify/          sends push notifications for chat and Bolleke
-  functions/tick/            timed notifications (morning summary), run by a schedule
+  functions/tick/            timed notifications (morning summary, reminders), run by a schedule
   functions/_shared/         code both functions use
 ```

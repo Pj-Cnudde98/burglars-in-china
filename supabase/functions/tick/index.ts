@@ -4,12 +4,17 @@
 //
 //   Daily summary: at 08:00 trip time on every trip day, today's city,
 //   weather, plan and departures.
+//   Reminders: before a flight, train or bus leaves, and 30 minutes before a
+//   planned event with a start time.
 
 import { authorized, sendToTrip, supabase } from '../_shared/push.ts'
 import { addDays, diffDays, localParts, zonedToUtc } from '../_shared/time.ts'
 
 const DAILY_HOUR = 8
 const DAILY_WINDOW_HOURS = 3 // still send if the 08:00 runs were missed, but not in the afternoon
+// Minutes before departure, by kind of transport: time to get to the airport or station.
+const TRANSPORT_LEAD: Record<string, number> = { flight: 180, train: 60, bus: 45, other: 60 }
+const EVENT_LEAD = 30
 
 type Trip = { id: string; name: string; start_date: string; end_date: string; timezone: string }
 type Stay = { city: string; check_in: string; check_out: string; lat: number | null; lng: number | null }
@@ -23,8 +28,11 @@ Deno.serve(async (req) => {
   let sent = 0
   for (const trip of (trips ?? []) as Trip[]) {
     const today = localParts(now, trip.timezone)
-    if (today.date < trip.start_date || today.date > trip.end_date) continue
-    sent += await dailySummary(trip, today)
+    if (today.date >= trip.start_date && today.date <= trip.end_date) sent += await dailySummary(trip, today)
+    // The flights out and back can fall a day outside the trip dates.
+    if (today.date >= addDays(trip.start_date, -1) && today.date <= addDays(trip.end_date, 1)) {
+      sent += await reminders(trip, now, today.date)
+    }
   }
   await supabase.from('push_log').delete().lt('sent_at', new Date(now.getTime() - 30 * 86_400_000).toISOString())
   return Response.json({ sent })
@@ -72,6 +80,45 @@ async function dailySummary(trip: Trip, today: { date: string; hour: number }) {
     url: '/#today',
     tag: 'daily'
   })
+}
+
+async function reminders(trip: Trip, now: Date, today: string) {
+  let sent = 0
+  const minutesUntil = (at: Date | string) => (new Date(at).getTime() - now.getTime()) / 60_000
+  const inWords = (m: number) => (m >= 90 ? `${Math.round(m / 60)} hours` : `${Math.max(1, Math.round(m))} min`)
+
+  const horizon = new Date(now.getTime() + Math.max(...Object.values(TRANSPORT_LEAD)) * 60_000)
+  const { data: transport } = await supabase.from('transport')
+    .select('id, kind, from_place, to_place, code, seat, depart_at, depart_tz').eq('trip_id', trip.id)
+    .gt('depart_at', now.toISOString()).lte('depart_at', horizon.toISOString())
+  for (const t of transport ?? []) {
+    const left = minutesUntil(t.depart_at)
+    if (left > (TRANSPORT_LEAD[t.kind] ?? TRANSPORT_LEAD.other)) continue
+    // The departure time is part of the key, so a rescheduled ticket reminds again.
+    if (!(await claim(trip.id, `transport:${t.id}:${t.depart_at}`))) continue
+    sent += await sendToTrip(trip.id, {
+      title: `${ICON[t.kind] ?? '🎫'} ${[t.code, 'to', t.to_place].filter(Boolean).join(' ')} leaves at ${localParts(new Date(t.depart_at), t.depart_tz).time}`,
+      body: [`In ${inWords(left)}, from ${t.from_place}.`, t.seat && `Seat ${t.seat}.`, 'Tap for the ticket.'].filter(Boolean).join(' '),
+      url: '/#transport',
+      tag: `transport-${t.id}`
+    }, { urgent: true })
+  }
+
+  const { data: events } = await supabase.from('events')
+    .select('id, day, start_time, title, place_zh').eq('trip_id', trip.id)
+    .in('day', [today, addDays(today, 1)]).not('start_time', 'is', null).not('kind', 'in', '(free,stay)')
+  for (const e of events ?? []) {
+    const left = minutesUntil(zonedToUtc(e.day, e.start_time, trip.timezone))
+    if (left <= 0 || left > EVENT_LEAD) continue
+    if (!(await claim(trip.id, `event:${e.id}:${e.day}T${e.start_time}`))) continue
+    sent += await sendToTrip(trip.id, {
+      title: `⏰ ${e.start_time.slice(0, 5)} ${e.title}`,
+      body: [`Starts in ${inWords(left)}`, e.place_zh].filter(Boolean).join(' · '),
+      url: '/#plan',
+      tag: `event-${e.id}`
+    })
+  }
+  return sent
 }
 
 const ICON: Record<string, string> = { flight: '✈', train: '🚄', bus: '🚌' }

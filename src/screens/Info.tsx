@@ -417,7 +417,7 @@ function Settings({ back }: { back: JSX.Element }) {
       <h2>Settings</h2>
       <div className="card stack">
         <div className="toggle">
-          <div><b>Notifications</b><div className="muted" style={{ fontSize: 13 }}>Chat messages and Bolleke alerts</div></div>
+          <div><b>Notifications</b><div className="muted" style={{ fontSize: 13 }}>Chat, Bolleke, the morning summary and reminders</div></div>
           {support === 'ok' && (
             <button className={`btn sm ${pushOn ? 'ghost' : ''}`} onClick={async () => {
               try {

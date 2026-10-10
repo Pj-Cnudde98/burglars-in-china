@@ -137,6 +137,24 @@ sequenceDiagram
 
 The `push_log` insert is the lock: whichever run inserts the key sends the notification, and later runs see the duplicate and skip. The three-hour window means a missed run at 08:00 is caught by the next one.
 
+## 5c. Reminders
+
+The same 5-minute run also looks ahead for things that are about to start.
+
+```mermaid
+flowchart TD
+    tick["tick runs (every 5 min)"] --> tq["Transport leaving within 3 h"]
+    tick --> eq["Events today or tomorrow<br/>with a start time<br/>(not 'free' or 'stay')"]
+    tq --> tl{"Within the lead time?<br/>flight 3 h · train 1 h<br/>bus 45 min · other 1 h"}
+    eq --> el{"Starts within 30 min?"}
+    tl -- yes --> claim1["claim push_log<br/>transport:id:depart_at"]
+    el -- yes --> claim2["claim push_log<br/>event:id:day+time"]
+    claim1 -- first time --> p1["✈ CA123 to Xi'an leaves at 09:00<br/>opens #transport"]
+    claim2 -- first time --> p2["⏰ 10:00 Forbidden City<br/>opens #plan"]
+```
+
+Event times are wall-clock times in `trips.timezone`; transport uses its own `depart_at` instant. The time is part of the `push_log` key, so moving a train to a later hour sends a new reminder. Reminders are checked from one day before the trip starts to one day after it ends, to cover the flights out and back.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

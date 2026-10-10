@@ -149,7 +149,7 @@ flowchart LR
 | Table / column | Migration | Purpose |
 |---|---|---|
 | `trips.timezone` | 0002 | Zone in which trip days start; the morning summary goes out at 08:00 there. Default `Asia/Shanghai`. |
-| `push_log (trip_id, key)` | 0002 | One row per timed notification already sent. Not readable through the API. |
+| `push_log (trip_id, key)` | 0002 | One row per timed notification already sent (`daily:<date>`, `transport:<id>:<depart_at>`, `event:<id>:<day>T<time>`). Not readable through the API. |
 
 ## Helper functions
 
