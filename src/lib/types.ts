@@ -27,8 +27,10 @@ export type Expense = {
   paid_by: string; split_with: string[]; created_by: string | null; created_at: string
 }
 export type Message = {
-  id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke'; body: string; created_at: string
+  id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke' | 'image' | 'poll'; body: string; created_at: string
+  image_path: string | null; poll_options: string[] | null
 }
+export type PollVote = { message_id: string; member_id: string; trip_id: string; choice: number | null }
 export type LiveLocation = {
   member_id: string; trip_id: string; lat: number; lng: number; accuracy: number | null
   expires_at: string; updated_at: string
@@ -44,6 +46,7 @@ export type TripData = {
   votes: Vote[]
   expenses: Expense[]
   messages: Message[]
+  pollVotes: PollVote[]
   locations: LiveLocation[]
 }
 

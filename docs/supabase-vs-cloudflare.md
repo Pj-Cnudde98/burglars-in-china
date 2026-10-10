@@ -93,7 +93,7 @@ flowchart TB
 | **RPC functions** | `join_trip`, `claim_admin`, `trip_preview`, plus helper functions used by policies | [0001_init.sql](../supabase/migrations/0001_init.sql) |
 | **Row Level Security** | Every table. Members read their trip; admins write plan data. | [security.md](security.md) |
 | **Realtime** | The phone subscribes to `postgres_changes` on 9 tables, filtered by `trip_id` | `store.tsx` |
-| **Storage** | Private `tickets` bucket. Files are stored at `<trip_id>/<file>`. | [tickets.ts](../src/lib/tickets.ts) |
+| **Storage** | Private `tickets` bucket (admins upload) and private `media` bucket (everyone uploads photos). Files are stored under `<trip_id>/`. | [tickets.ts](../src/lib/tickets.ts), [media.ts](../src/lib/media.ts) |
 | **Database webhook** | Calls the Edge Function on each new `messages` row | Dashboard config (see README step 3.4) |
 | **Edge Function `notify`** | Looks up subscribers, sends Web Push, removes dead subscriptions | [notify/index.ts](../supabase/functions/notify/index.ts) |
 | **Edge Function `tick`** | Timed notifications: the morning summary, departure and event reminders | [tick/index.ts](../supabase/functions/tick/index.ts) |

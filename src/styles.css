@@ -184,7 +184,23 @@ h3{font-family:var(--f-display);font-size:16px;margin:0}
 .msg .who{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:1px}
 .msg.mine{align-self:flex-end;background:var(--red);border-color:var(--red)}
 .msg.sys{align-self:center;background:none;border:1px dashed var(--line);font-size:12px;color:var(--muted);text-align:center}
-.composer{display:flex;gap:8px;margin-top:12px;position:sticky;bottom:0;background:var(--ink);padding-top:8px}
+.msg.wide{align-self:stretch;max-width:none}
+.msg.photo{padding:6px;display:flex;flex-direction:column;gap:4px}
+.msg.photo .who{padding:0 6px}
+.thumb{display:grid;place-items:center;min-width:140px;min-height:110px;padding:0;border:0;border-radius:10px;overflow:hidden;background:var(--lacquer-2)}
+.thumb img{display:block;max-width:100%;max-height:260px}
+.poll{display:flex;flex-direction:column;gap:6px}
+.poll .q{font-weight:700;font-size:15px}
+.opt{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:var(--lacquer-2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.opt[aria-pressed="true"]{border-color:var(--red)}
+.opt .bar{position:absolute;inset:0 auto 0 0;background:rgba(200,16,46,.28);transition:width .3s}
+.opt .lbl,.opt b{position:relative}
+.opt .lbl{display:flex;flex-direction:column;min-width:0}
+.opt small{font-size:11px;color:var(--muted)}
+.composer{display:flex;flex-direction:column;gap:8px;margin-top:12px;position:sticky;bottom:0;background:var(--ink);padding-top:8px}
+.attach{display:flex;gap:8px}
+.plus{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--lacquer);font-size:20px;line-height:1}
+.plus[aria-expanded="true"]{border-color:var(--red)}
 .composer input{flex:1;min-width:0;background:var(--lacquer);border:1px solid var(--line);border-radius:999px;padding:11px 14px}
 
 /* more */
@@ -214,5 +230,6 @@ h3{font-family:var(--f-display);font-size:16px;margin:0}
 .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .file-link{color:var(--gold);font-weight:600;background:none;border:0;padding:0;font-size:12px}
 .viewer{position:absolute;inset:0;z-index:12;background:var(--ink);display:flex;flex-direction:column}
-.viewer iframe,.viewer img{flex:1;width:100%;border:0;object-fit:contain;background:#fff}
+.viewer iframe,.viewer img{flex:1;min-height:0;width:100%;border:0;object-fit:contain;background:#fff}
+.viewer.dark img,.viewer.dark video{background:#000}
 textarea{resize:vertical;min-height:70px}

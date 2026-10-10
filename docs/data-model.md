@@ -150,6 +150,9 @@ flowchart LR
 |---|---|---|
 | `trips.timezone` | 0002 | Zone in which trip days start; the morning summary goes out at 08:00 there. Default `Asia/Shanghai`. |
 | `push_log (trip_id, key)` | 0002 | One row per timed notification already sent (`daily:<date>`, `transport:<id>:<depart_at>`, `event:<id>:<day>T<time>`). Not readable through the API. |
+| `messages.image_path`, `messages.poll_options` | 0003 | A chat message is now one of four kinds: `text`, `bolleke`, `image` (has `image_path`) or `poll` (body is the question, `poll_options` the 2 to 6 answers). Check constraints keep kind and columns in step. |
+| `poll_votes (message_id, member_id, choice)` | 0003 | One answer per member per poll. `choice` is the position in `poll_options`; `null` means the vote was taken back (same reason as `votes.value = 0`). Published to Realtime. |
+| Storage bucket `media` | 0003 | Photos shared by the group, at `<trip_id>/<folder>/<file>`. 50 MB per file. |
 
 ## Helper functions
 

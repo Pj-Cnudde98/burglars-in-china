@@ -6,7 +6,7 @@ The trip app for our 20-day China trip. It's a web app that you add to your home
 - **Plan**: a day-by-day timeline plus a calendar of the whole trip
 - **Bolleke**: one tap shares your live location with the group for 15 minutes and sends everyone a notification
 - **Food**: everyone adds restaurants and votes thumbs up or down, ranked per city
-- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses, group chat
+- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses, group chat with photos and polls
 - **Offline**: the schedule, hotels and tickets are saved on the phone and work without signal
 
 Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, and Open-Meteo weather. It uses no Google services, so it works in China.
@@ -21,7 +21,7 @@ Design docs with architecture diagrams, data model and flows are in [docs/](docs
 
 1. Create a free account at [supabase.com](https://supabase.com) and a new project. A region close to China works best, such as **Singapore** or **Tokyo**.
 2. **Authentication → Sign In / Providers**: turn on **Allow anonymous sign-ins**.
-3. **SQL Editor**: paste and run `supabase/migrations/0001_init.sql`.
+3. **SQL Editor**: paste and run `supabase/migrations/0001_init.sql`, then the other files in that folder in number order. (`0002` needs the two Vault values from step 3b first.)
 4. Open `supabase/seed.sql`. Change the trip code (`DRAGON-27`), the admin PIN (`8888`) and the dates, then run it. This adds the sample route, hotels and tickets, which you can edit later in the app.
 5. **Project Settings → API**: copy the **Project URL** and the **anon public** key.
 
@@ -94,11 +94,12 @@ Every push to `main` redeploys automatically.
 ```
 src/
   App.tsx            tabs and routing (#today, #plan, #map, #food, #info, #chat…)
-  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, chat, settings)
+  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Chat
   lib/store.tsx      loads trip data, saves it on the phone, live updates
   lib/bolleke.ts     15-minute live location sharing
   lib/push.ts        notification subscribe/unsubscribe
   lib/tickets.ts     ticket files, cached for offline
+  lib/media.ts       shared photos: shrink, upload, cache
   lib/gcj.ts         GPS → Chinese map grid conversion
   sw.ts              service worker: offline cache + notifications
 supabase/

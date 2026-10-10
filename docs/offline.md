@@ -22,6 +22,7 @@ flowchart LR
 | App shell | Workbox precache + navigation fallback to `/index.html` | Precached at install | [sw.ts](../src/sw.ts) |
 | Trip rows (plan, hotels, food, expenses, chat) | `localStorage` JSON snapshot | Written after every refresh; read on start | [store.tsx](../src/lib/store.tsx) |
 | Ticket files | Cache Storage `bic-tickets` | Downloaded when a transport row has a file, then served from cache | [tickets.ts](../src/lib/tickets.ts) |
+| Shared photos | Cache Storage `bic-media` | Each photo or preview is kept after it has been shown once | [media.ts](../src/lib/media.ts) |
 | Map tiles | Cache Storage `map-tiles` | CacheFirst: tiles you have looked at | `sw.ts` |
 | Weather | Cache Storage `weather` | StaleWhileRevalidate | `sw.ts` |
 | Brush font | Cache Storage `fonts` | CacheFirst | `sw.ts` |

@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../lib/store'
 import { supabase } from '../lib/supabase'
 import { fmtDateTime, fmtShort, fmtTime } from '../lib/dates'
 import { enablePush, disablePush, isSubscribed, pushSupport } from '../lib/push'
 import { openTicket, uploadTicket } from '../lib/tickets'
-import { Field, Sheet, initial, useToast } from '../components/ui'
+import { Field, Overlay, Sheet, initial, useToast } from '../components/ui'
 import type { Expense, Stay, Transport } from '../lib/types'
+import Chat from './Chat'
 
 export default function Info({ sub, go }: { sub: string | null; go: (h: string) => void }) {
   const { data, syncedAt } = useStore()
@@ -184,12 +185,12 @@ function TransportList({ back }: { back: JSX.Element }) {
       ))}
       {editing && <TransportSheet value={editing} onClose={() => setEditing(null)} />}
       {viewer && (
-        <div className="viewer">
+        <Overlay><div className="viewer">
           <div className="row between" style={{ padding: 12 }}>
             <b>Ticket</b><button className="btn sm" onClick={() => { URL.revokeObjectURL(viewer.url); setViewer(null) }}>Close</button>
           </div>
           {viewer.pdf ? <iframe src={viewer.url} title="Ticket" /> : <img src={viewer.url} alt="Ticket" />}
-        </div>
+        </div></Overlay>
       )}
     </div>
   )
@@ -361,43 +362,6 @@ function ExpenseSheet({ value, onClose }: { value: Partial<Expense>; onClose: ()
         </div>
       </div>
     </Sheet>
-  )
-}
-
-/* ------------------------------------------------------------ chat */
-
-function Chat({ back }: { back: JSX.Element }) {
-  const { data, session, memberName } = useStore()
-  const toast = useToast()
-  const [text, setText] = useState('')
-  const end = useRef<HTMLDivElement>(null)
-  useEffect(() => { end.current?.scrollIntoView({ block: 'end' }) }, [data.messages.length])
-
-  const send = async () => {
-    const body = text.trim()
-    if (!body) return
-    setText('')
-    const { error } = await supabase.from('messages').insert({ trip_id: session!.tripId, member_id: session!.memberId, body })
-    if (error) { setText(body); toast(navigator.onLine ? 'Message not sent. Try again.' : 'You are offline. Send it again with signal.') }
-  }
-
-  return (
-    <div className="chatwrap">
-      <div style={{ marginBottom: 10 }}>{back}</div>
-      <div className="msgs">
-        {data.messages.length === 0 && <div className="empty">No messages yet. Say hi!</div>}
-        {data.messages.map((m) => m.kind === 'bolleke'
-          ? <div className="msg sys" key={m.id}>📍 {m.body} · {fmtTime(m.created_at, Intl.DateTimeFormat().resolvedOptions().timeZone)} · <a href="#map" style={{ color: 'var(--gold)' }}>see map</a></div>
-          : <div className={`msg ${m.member_id === session!.memberId ? 'mine' : ''}`} key={m.id}>
-              {m.member_id !== session!.memberId && <div className="who">{memberName(m.member_id)}</div>}{m.body}
-            </div>)}
-        <div ref={end} />
-      </div>
-      <form className="composer" onSubmit={(e) => { e.preventDefault(); send() }}>
-        <input id="chatIn" value={text} onChange={(e) => setText(e.target.value)} placeholder="Message the group" autoComplete="off" />
-        <button className="btn sm" type="submit">Send</button>
-      </form>
-    </div>
   )
 }
 

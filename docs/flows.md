@@ -155,6 +155,34 @@ flowchart TD
 
 Event times are wall-clock times in `trips.timezone`; transport uses its own `depart_at` instant. The time is part of the `push_log` key, so moving a train to a later hour sends a new reminder. Reminders are checked from one day before the trip starts to one day after it ends, to cover the flights out and back.
 
+## 5d. Photos and polls in chat
+
+Both are ordinary rows in `messages`, so they reach other phones and trigger notifications exactly like text does.
+
+```mermaid
+sequenceDiagram
+    actor U as Jan
+    participant App as 📱 Chat.tsx + media.ts
+    participant ST as Storage: media
+    participant DB as Postgres
+    participant O as 📱 Others
+
+    U->>App: picks a photo
+    App->>App: shrink to 1600 px JPEG<br/>+ 480 px preview
+    App->>ST: upload trip/chat/x.thumb.jpg, then x.jpg
+    App->>DB: insert messages (kind = image, image_path)
+    DB-->>O: Realtime + push "📷 Photo"
+    O->>ST: download the preview (kept in Cache Storage)
+    Note over O: Tap → download the full photo once
+
+    U->>App: posts a poll (question + 2 to 6 answers)
+    App->>DB: insert messages (kind = poll, poll_options)
+    O->>DB: upsert poll_votes (choice)
+    DB-->>App: Realtime: poll_votes changed → bars update
+```
+
+Photos are shrunk on the phone before upload, so a 5 MB camera picture costs about 300 KB of roaming data.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

@@ -18,7 +18,10 @@ flowchart TB
     App --> Plan["screens/Plan"]
     App --> Map["screens/MapScreen"]
     App --> Food["screens/Food"]
-    App --> Info["screens/Info<br/>hotels · transport · money<br/>chat · settings"]
+    App --> Info["screens/Info<br/>hotels · transport · money<br/>settings"]
+    Info --> Chat["screens/Chat<br/>text · photos · polls"]
+    Chat --> media["lib/media"]
+    media --> sbc
 
     Today --> weather["lib/weather"]
     Map --> bolleke["lib/bolleke"]
@@ -71,6 +74,7 @@ Screens read from `data` and write directly with `supabase.from(...)`. The Realt
 | [bolleke.ts](../src/lib/bolleke.ts) | 15-minute geolocation watch, wake lock, upsert every ≥10 s |
 | [push.ts](../src/lib/push.ts) | Capability check, subscribe/unsubscribe |
 | [tickets.ts](../src/lib/tickets.ts) | Upload, download, offline cache |
+| [media.ts](../src/lib/media.ts) | Shared photos: shrink on the phone, upload with a preview, cache what was shown |
 | [weather.ts](../src/lib/weather.ts) | Open-Meteo hook and icon mapping |
 | [gcj.ts](../src/lib/gcj.ts) | WGS-84 → GCJ-02 |
 | [trip.ts](../src/lib/trip.ts), [dates.ts](../src/lib/dates.ts) | Current city/day logic, date helpers |

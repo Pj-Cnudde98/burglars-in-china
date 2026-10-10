@@ -4,7 +4,9 @@
 
 import { authorized, sendToTrip, supabase } from '../_shared/push.ts'
 
-type Message = { id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke'; body: string }
+type Message = { id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke' | 'image' | 'poll'; body: string }
+
+const PREFIX: Record<string, string> = { image: '📷 ', poll: '📊 ' }
 
 Deno.serve(async (req) => {
   if (!authorized(req)) return new Response('forbidden', { status: 403 })
@@ -18,7 +20,7 @@ Deno.serve(async (req) => {
   const notification =
     msg.kind === 'bolleke'
       ? { title: `📍 ${name} pressed Bolleke`, body: 'Tap to see where on the map', url: '/#map', tag: `bolleke-${msg.member_id}` }
-      : { title: name, body: msg.body.slice(0, 140), url: '/#chat', tag: 'chat' }
+      : { title: name, body: `${PREFIX[msg.kind] ?? ''}${msg.body}`.slice(0, 140), url: '/#chat', tag: 'chat' }
 
   const sent = await sendToTrip(msg.trip_id, notification, { except: msg.member_id, urgent: msg.kind === 'bolleke' })
   return Response.json({ sent })
