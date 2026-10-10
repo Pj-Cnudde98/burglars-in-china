@@ -11,6 +11,8 @@ The trip app for our 20-day China trip. It's a web app that you add to your home
 
 Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, and Open-Meteo weather. It uses no Google services, so it works in China.
 
+Design docs with architecture diagrams, data model and flows are in [docs/](docs/README.md).
+
 ---
 
 ## Setup (one time, about 30 minutes)
