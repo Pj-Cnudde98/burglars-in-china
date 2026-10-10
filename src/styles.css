@@ -232,4 +232,9 @@ h3{font-family:var(--f-display);font-size:16px;margin:0}
 .viewer{position:absolute;inset:0;z-index:12;background:var(--ink);display:flex;flex-direction:column}
 .viewer iframe,.viewer img{flex:1;min-height:0;width:100%;border:0;object-fit:contain;background:#fff}
 .viewer.dark img,.viewer.dark video{background:#000}
+.viewer video{flex:1;min-height:0;width:100%}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.cell{position:relative;aspect-ratio:1;padding:0;border:0;border-radius:8px;overflow:hidden;background:var(--lacquer-2)}
+.cell img{display:block;width:100%;height:100%;object-fit:cover}
+.cell .play{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;color:var(--paper);text-shadow:0 1px 6px rgba(0,0,0,.8)}
 textarea{resize:vertical;min-height:70px}

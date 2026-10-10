@@ -183,6 +183,27 @@ sequenceDiagram
 
 Photos are shrunk on the phone before upload, so a 5 MB camera picture costs about 300 KB of roaming data.
 
+## 5e. Album
+
+```mermaid
+flowchart TB
+    pick["Pick photos and videos<br/>(several at once)"] --> kind{"Photo or video?"}
+    kind -- photo --> shrink["Shrink to 2560 px JPEG<br/>+ 480 px preview"]
+    kind -- video --> size{"Over 50 MB?"}
+    size -- yes --> skip["Skipped, with a message"]
+    size -- no --> frame["Grab a frame as preview<br/>(when the phone can)"]
+    shrink --> up[("Storage: media<br/>trip/album/…")]
+    frame --> up
+    up --> row["insert album_items<br/>(path, thumb_path, taken_at)"]
+    row --> rt["Realtime → every phone"]
+    rt --> grid["Grid by day: previews,<br/>kept in Cache Storage"]
+    grid --> open{"Open one"}
+    open -- photo --> full["Download once, then cached"]
+    open -- video --> signed["Signed link, valid 1 hour,<br/>streamed"]
+```
+
+The album does not send notifications: it would be one per photo. "Save" hands the photo to the phone's share sheet (Save to Photos); for a video it opens a download link.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

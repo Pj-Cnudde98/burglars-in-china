@@ -50,6 +50,7 @@ flowchart TD
 | Map | ◐ | Previously viewed tiles only. Your own GPS dot still works. |
 | Weather | ◐ | Last forecast |
 | Food list, expenses, chat history | ✅ read | From snapshot |
+| Album | ◐ | Previews and photos you have opened. Videos need signal. |
 | Adding food, votes, expenses, chat | ❌ | Needs Supabase. There is no write queue. |
 | Bolleke | ❌ | Needs Supabase |
 | Notifications | ❌ | Need data connection |

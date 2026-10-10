@@ -29,6 +29,7 @@ flowchart LR
 | `locations` | trip members | own row | own row |
 | `push_subscriptions` | own | own | own |
 | `poll_votes` | trip members | own vote | own vote |
+| `album_items` | trip members | members (as themselves) | uploader or admin |
 | Storage `tickets` | trip members | admins | admins |
 | Storage `media` | trip members | trip members | uploader (same phone) or admin |
 | `push_log` | nobody via API | nobody via API | nobody via API |

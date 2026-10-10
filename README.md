@@ -6,7 +6,7 @@ The trip app for our 20-day China trip. It's a web app that you add to your home
 - **Plan**: a day-by-day timeline plus a calendar of the whole trip
 - **Bolleke**: one tap shares your live location with the group for 15 minutes and sends everyone a notification
 - **Food**: everyone adds restaurants and votes thumbs up or down, ranked per city
-- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses, group chat with photos and polls
+- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses, group chat with photos and polls, a shared photo and video album
 - **Offline**: the schedule, hotels and tickets are saved on the phone and work without signal
 
 Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, and Open-Meteo weather. It uses no Google services, so it works in China.
@@ -86,6 +86,7 @@ Every push to `main` redeploys automatically.
 
 - **Bolleke works while the app is open.** Web apps can't read your location in the background, so keep the screen on while sharing. The app tries to keep it awake for you.
 - **Use your roaming eSIM's data** in China, not local Wi-Fi. That way Supabase, notifications (Android uses Google's push service) and the weather all work.
+- **Album space**: Supabase's free plan stores 1 GB in total and at most 50 MB per file. Photos are shrunk to about 1 MB before upload, so there is room for several hundred. Videos are uploaded as they are, so keep them short.
 - **Admins**: anyone who enters the admin PIN on their phone can edit the plan, hotels and tickets. Share the PIN with the other admins only.
 - **Map**: Amap tiles use the Chinese GCJ-02 grid. The app converts GPS positions, so pins land in the right spot.
 
@@ -94,7 +95,7 @@ Every push to `main` redeploys automatically.
 ```
 src/
   App.tsx            tabs and routing (#today, #plan, #map, #food, #info, #chat…)
-  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Chat
+  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Chat, Album
   lib/store.tsx      loads trip data, saves it on the phone, live updates
   lib/bolleke.ts     15-minute live location sharing
   lib/push.ts        notification subscribe/unsubscribe

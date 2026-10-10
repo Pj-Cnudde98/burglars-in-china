@@ -153,6 +153,7 @@ flowchart LR
 | `messages.image_path`, `messages.poll_options` | 0003 | A chat message is now one of four kinds: `text`, `bolleke`, `image` (has `image_path`) or `poll` (body is the question, `poll_options` the 2 to 6 answers). Check constraints keep kind and columns in step. |
 | `poll_votes (message_id, member_id, choice)` | 0003 | One answer per member per poll. `choice` is the position in `poll_options`; `null` means the vote was taken back (same reason as `votes.value = 0`). Published to Realtime. |
 | Storage bucket `media` | 0003 | Photos shared by the group, at `<trip_id>/<folder>/<file>`. 50 MB per file. |
+| `album_items` | 0004 | One row per photo or video in the shared album: `kind`, `path` and `thumb_path` in the `media` bucket, `caption`, `taken_at`. Published to Realtime. |
 
 ## Helper functions
 

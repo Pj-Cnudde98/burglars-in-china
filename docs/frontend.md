@@ -20,6 +20,8 @@ flowchart TB
     App --> Food["screens/Food"]
     App --> Info["screens/Info<br/>hotels · transport · money<br/>settings"]
     Info --> Chat["screens/Chat<br/>text · photos · polls"]
+    Info --> Album["screens/Album<br/>photos · videos"]
+    Album --> media
     Chat --> media["lib/media"]
     media --> sbc
 
@@ -48,7 +50,7 @@ The location hash drives everything, so notification taps can deep-link (`/#map`
 | `#map` | Map + Bolleke |
 | `#food` | Food |
 | `#info` | Info menu |
-| `#hotels`, `#transport`, `#money`, `#chat`, `#settings` | Info sub-pages |
+| `#hotels`, `#transport`, `#money`, `#chat`, `#album`, `#settings` | Info sub-pages |
 
 ## State
 
@@ -74,7 +76,7 @@ Screens read from `data` and write directly with `supabase.from(...)`. The Realt
 | [bolleke.ts](../src/lib/bolleke.ts) | 15-minute geolocation watch, wake lock, upsert every ≥10 s |
 | [push.ts](../src/lib/push.ts) | Capability check, subscribe/unsubscribe |
 | [tickets.ts](../src/lib/tickets.ts) | Upload, download, offline cache |
-| [media.ts](../src/lib/media.ts) | Shared photos: shrink on the phone, upload with a preview, cache what was shown |
+| [media.ts](../src/lib/media.ts) | Shared photos and videos: shrink photos on the phone, upload with a preview, cache what was shown, signed links for video |
 | [weather.ts](../src/lib/weather.ts) | Open-Meteo hook and icon mapping |
 | [gcj.ts](../src/lib/gcj.ts) | WGS-84 → GCJ-02 |
 | [trip.ts](../src/lib/trip.ts), [dates.ts](../src/lib/dates.ts) | Current city/day logic, date helpers |

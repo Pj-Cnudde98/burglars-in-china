@@ -31,6 +31,10 @@ export type Message = {
   image_path: string | null; poll_options: string[] | null
 }
 export type PollVote = { message_id: string; member_id: string; trip_id: string; choice: number | null }
+export type AlbumItem = {
+  id: string; trip_id: string; member_id: string | null; kind: 'image' | 'video'; path: string
+  thumb_path: string | null; caption: string | null; taken_at: string; created_at: string
+}
 export type LiveLocation = {
   member_id: string; trip_id: string; lat: number; lng: number; accuracy: number | null
   expires_at: string; updated_at: string
@@ -47,6 +51,7 @@ export type TripData = {
   expenses: Expense[]
   messages: Message[]
   pollVotes: PollVote[]
+  album: AlbumItem[]
   locations: LiveLocation[]
 }
 

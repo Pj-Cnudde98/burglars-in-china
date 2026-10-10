@@ -8,7 +8,7 @@ import { cacheTickets } from './tickets'
 
 const EMPTY: TripData = {
   trip: null, members: [], stays: [], events: [], transport: [], restaurants: [],
-  votes: [], expenses: [], messages: [], pollVotes: [], locations: []
+  votes: [], expenses: [], messages: [], pollVotes: [], album: [], locations: []
 }
 type TableKey = Exclude<keyof TripData, 'trip'>
 const TABLES: Record<TableKey, { table: string; order?: [string, boolean] }> = {
@@ -21,6 +21,7 @@ const TABLES: Record<TableKey, { table: string; order?: [string, boolean] }> = {
   expenses: { table: 'expenses', order: ['created_at', true] },
   messages: { table: 'messages', order: ['created_at', true] },
   pollVotes: { table: 'poll_votes' },
+  album: { table: 'album_items', order: ['taken_at', true] },
   locations: { table: 'locations' }
 }
 const SESSION_KEY = 'bic-session'

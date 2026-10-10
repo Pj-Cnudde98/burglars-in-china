@@ -18,7 +18,7 @@ const TABS: { id: Tab; g: string; label: string }[] = [
   { id: 'food', g: '食', label: 'Food' },
   { id: 'info', g: '更', label: 'Info' }
 ]
-const INFO_SUBS = ['hotels', 'transport', 'money', 'chat', 'settings']
+const INFO_SUBS = ['hotels', 'transport', 'money', 'chat', 'album', 'settings']
 
 // Hash routes: #today, #plan, #map, #food, #info, #chat, #hotels, ...
 function parseHash(): { tab: Tab; sub: string | null } {
