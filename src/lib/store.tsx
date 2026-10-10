@@ -8,7 +8,7 @@ import { cacheTickets } from './tickets'
 
 const EMPTY: TripData = {
   trip: null, members: [], stays: [], events: [], transport: [], restaurants: [],
-  votes: [], expenses: [], messages: [], locations: []
+  votes: [], expenses: [], messages: [], pollVotes: [], album: [], locations: []
 }
 type TableKey = Exclude<keyof TripData, 'trip'>
 const TABLES: Record<TableKey, { table: string; order?: [string, boolean] }> = {
@@ -20,6 +20,8 @@ const TABLES: Record<TableKey, { table: string; order?: [string, boolean] }> = {
   votes: { table: 'votes' },
   expenses: { table: 'expenses', order: ['created_at', true] },
   messages: { table: 'messages', order: ['created_at', true] },
+  pollVotes: { table: 'poll_votes' },
+  album: { table: 'album_items', order: ['taken_at', true] },
   locations: { table: 'locations' }
 }
 const SESSION_KEY = 'bic-session'
@@ -49,7 +51,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(() => readJson<Session>(SESSION_KEY))
   const [data, setData] = useState<TripData>(() => {
     const s = readJson<Session>(SESSION_KEY)
-    return (s && readJson<TripData>(dataKey(s.tripId))) || EMPTY
+    const saved = s && readJson<TripData>(dataKey(s.tripId))
+    // A copy saved by an older version of the app may lack the newer lists.
+    return saved ? { ...EMPTY, ...saved } : EMPTY
   })
   const [online, setOnline] = useState(navigator.onLine)
   const [syncedAt, setSyncedAt] = useState<string | null>(() => readJson<string>('bic-synced'))

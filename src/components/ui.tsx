@@ -1,21 +1,29 @@
 import { createContext, useCallback, useContext, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
+
+/** Draws over the whole app column, wherever the screen underneath is scrolled to. */
+export function Overlay({ children }: { children: ReactNode }) {
+  return createPortal(children, document.querySelector('.phone') ?? document.body)
+}
 
 export function Sheet({ title, onClose, onSubmit, children, submitLabel = 'Save', busy, extra }: {
   title: string; onClose: () => void; onSubmit: (e: FormEvent) => void; children: ReactNode
   submitLabel?: string; busy?: boolean; extra?: ReactNode
 }) {
   return (
-    <div className="sheet" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <form className="panel" onSubmit={(e) => { e.preventDefault(); onSubmit(e) }}>
-        <h3>{title}</h3>
-        {children}
-        <div className="row">
-          <button className="btn ghost" type="button" onClick={onClose} style={{ flex: 1 }}>Cancel</button>
-          <button className="btn" type="submit" disabled={busy} style={{ flex: 1 }}>{busy ? 'Saving…' : submitLabel}</button>
-        </div>
-        {extra}
-      </form>
-    </div>
+    <Overlay>
+      <div className="sheet" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+        <form className="panel" onSubmit={(e) => { e.preventDefault(); onSubmit(e) }}>
+          <h3>{title}</h3>
+          {children}
+          <div className="row">
+            <button className="btn ghost" type="button" onClick={onClose} style={{ flex: 1 }}>Cancel</button>
+            <button className="btn" type="submit" disabled={busy} style={{ flex: 1 }}>{busy ? 'Saving…' : submitLabel}</button>
+          </div>
+          {extra}
+        </form>
+      </div>
+    </Overlay>
   )
 }
 

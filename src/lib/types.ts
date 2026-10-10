@@ -25,9 +25,16 @@ export type Vote = { restaurant_id: string; member_id: string; trip_id: string; 
 export type Expense = {
   id: string; trip_id: string; description: string; amount: number; currency: string
   paid_by: string; split_with: string[]; created_by: string | null; created_at: string
+  rate: number; is_settlement: boolean
 }
 export type Message = {
-  id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke'; body: string; created_at: string
+  id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke' | 'image' | 'poll'; body: string; created_at: string
+  image_path: string | null; poll_options: string[] | null
+}
+export type PollVote = { message_id: string; member_id: string; trip_id: string; choice: number | null }
+export type AlbumItem = {
+  id: string; trip_id: string; member_id: string | null; kind: 'image' | 'video'; path: string
+  thumb_path: string | null; caption: string | null; taken_at: string; created_at: string
 }
 export type LiveLocation = {
   member_id: string; trip_id: string; lat: number; lng: number; accuracy: number | null
@@ -44,6 +51,8 @@ export type TripData = {
   votes: Vote[]
   expenses: Expense[]
   messages: Message[]
+  pollVotes: PollVote[]
+  album: AlbumItem[]
   locations: LiveLocation[]
 }
 

@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../lib/store'
 import { supabase } from '../lib/supabase'
 import { fmtDateTime, fmtShort, fmtTime } from '../lib/dates'
 import { enablePush, disablePush, isSubscribed, pushSupport } from '../lib/push'
 import { openTicket, uploadTicket } from '../lib/tickets'
-import { Field, Sheet, initial, useToast } from '../components/ui'
-import type { Expense, Stay, Transport } from '../lib/types'
+import { Field, Overlay, Sheet, useToast } from '../components/ui'
+import type { Stay, Transport } from '../lib/types'
+import Money from './Money'
+import Chat from './Chat'
+import Album from './Album'
+import Translate from './Translate'
 
 export default function Info({ sub, go }: { sub: string | null; go: (h: string) => void }) {
   const { data, syncedAt } = useStore()
@@ -20,8 +24,10 @@ export default function Info({ sub, go }: { sub: string | null; go: (h: string) 
           <div className="tiles">
             <button className="tile" onClick={() => go('hotels')}><span className="g">宿</span><b>Hotels</b><span>{data.stays.length} stays · taxi cards</span></button>
             <button className="tile" onClick={() => go('transport')}><span className="g">行</span><b>Transport</b><span>{data.transport.length} flights and trains</span></button>
-            <button className="tile" onClick={() => go('money')}><span className="g">钱</span><b>Expenses</b><span>Who owes who</span></button>
+            <button className="tile" onClick={() => go('money')}><span className="g">钱</span><b>Expenses</b><span>Who owes who · converter</span></button>
             <button className="tile" onClick={() => go('chat')}><span className="g">聊</span><b>Group chat</b><span>{unread} messages</span></button>
+            <button className="tile" onClick={() => go('album')}><span className="g">影</span><b>Album</b><span>{data.album.length} photos and videos</span></button>
+            <button className="tile" onClick={() => go('translate')}><span className="g">译</span><b>Translate</b><span>Voice · phrasebook</span></button>
           </div>
           <button className="card row between" style={{ textAlign: 'left' }} onClick={() => go('settings')}>
             <div><b>Settings</b><div className="muted" style={{ fontSize: 13 }}>Notifications, admin, sign out</div></div><span className="muted">›</span>
@@ -35,6 +41,8 @@ export default function Info({ sub, go }: { sub: string | null; go: (h: string) 
       {sub === 'transport' && <TransportList back={back} />}
       {sub === 'money' && <Money back={back} />}
       {sub === 'chat' && <Chat back={back} />}
+      {sub === 'album' && <Album back={back} />}
+      {sub === 'translate' && <Translate back={back} />}
       {sub === 'settings' && <Settings back={back} />}
     </main>
   )
@@ -184,12 +192,12 @@ function TransportList({ back }: { back: JSX.Element }) {
       ))}
       {editing && <TransportSheet value={editing} onClose={() => setEditing(null)} />}
       {viewer && (
-        <div className="viewer">
+        <Overlay><div className="viewer">
           <div className="row between" style={{ padding: 12 }}>
             <b>Ticket</b><button className="btn sm" onClick={() => { URL.revokeObjectURL(viewer.url); setViewer(null) }}>Close</button>
           </div>
           {viewer.pdf ? <iframe src={viewer.url} title="Ticket" /> : <img src={viewer.url} alt="Ticket" />}
-        </div>
+        </div></Overlay>
       )}
     </div>
   )
@@ -273,134 +281,6 @@ function TransportSheet({ value, onClose }: { value: Partial<Transport>; onClose
   )
 }
 
-/* ------------------------------------------------------------ money */
-
-function Money({ back }: { back: JSX.Element }) {
-  const { data, session, memberName } = useStore()
-  const [editing, setEditing] = useState<Partial<Expense> | null>(null)
-  const bal = new Map<string, number>()
-  for (const e of data.expenses) {
-    const share = e.amount / e.split_with.length
-    bal.set(e.paid_by, (bal.get(e.paid_by) ?? 0) + Number(e.amount))
-    for (const m of e.split_with) bal.set(m, (bal.get(m) ?? 0) - share)
-  }
-  const total = data.expenses.reduce((a, e) => a + Number(e.amount), 0)
-  const mine = bal.get(session!.memberId) ?? 0
-  const yuan = (n: number) => `¥${Math.round(Math.abs(n)).toLocaleString('en')}`
-  const people = [...bal.entries()].filter(([, v]) => Math.abs(v) >= 1).sort((a, b) => b[1] - a[1])
-
-  return (
-    <div className="stack">
-      {back}
-      <div className="row between"><h2 style={{ margin: 0 }}>Expenses</h2><button className="btn sm" onClick={() => setEditing({ paid_by: session!.memberId, split_with: data.members.map((m) => m.id) })}>+ Add</button></div>
-      <div className="bal">
-        <div className="card"><span className="muted" style={{ fontSize: 12 }}>Group total</span><b>{yuan(total)}</b></div>
-        <div className="card"><span className="muted" style={{ fontSize: 12 }}>{mine >= 0 ? 'You get back' : 'You owe'}</span><b className={mine >= 0 ? 'pos' : 'neg'}>{yuan(mine)}</b></div>
-      </div>
-      {people.length > 0 && (
-        <div className="card stack">
-          <h3>Balances</h3>
-          {people.map(([id, v]) => (
-            <div key={id} className="row between"><span>{memberName(id)}</span><b className={`num ${v >= 0 ? 'pos' : 'neg'}`}>{v >= 0 ? '+' : '−'}{yuan(v)}</b></div>
-          ))}
-        </div>
-      )}
-      <div className="card">
-        {data.expenses.length === 0 && <p className="muted" style={{ margin: 0 }}>No expenses yet.</p>}
-        {[...data.expenses].reverse().map((e) => (
-          <div className="exp" key={e.id} onClick={() => (e.created_by === session!.memberId || session!.isAdmin) && setEditing(e)}>
-            <span className={`av ${e.paid_by === session!.memberId ? 'me' : ''}`}>{initial(memberName(e.paid_by))}</span>
-            <div style={{ minWidth: 0 }}><div style={{ fontWeight: 600 }}>{e.description}</div>
-              <div className="muted" style={{ fontSize: 12 }}>{memberName(e.paid_by)} paid · split {e.split_with.length} ways · {yuan(e.amount / e.split_with.length)} each</div></div>
-            <b className="num">{yuan(Number(e.amount))}</b>
-          </div>
-        ))}
-      </div>
-      {editing && <ExpenseSheet value={editing} onClose={() => setEditing(null)} />}
-    </div>
-  )
-}
-
-function ExpenseSheet({ value, onClose }: { value: Partial<Expense>; onClose: () => void }) {
-  const { data, session } = useStore()
-  const toast = useToast()
-  const [v, setV] = useState(value)
-  const [busy, setBusy] = useState(false)
-  const split = new Set(v.split_with ?? [])
-  const toggle = (id: string) => { const s = new Set(split); if (s.has(id)) s.delete(id); else s.add(id); setV({ ...v, split_with: [...s] }) }
-
-  const save = async () => {
-    if (!split.size) return toast('Pick at least one person to split with.')
-    setBusy(true)
-    const row = { trip_id: session!.tripId, description: v.description, amount: Number(v.amount), paid_by: v.paid_by, split_with: [...split] }
-    const { error } = v.id ? await supabase.from('expenses').update(row).eq('id', v.id) : await supabase.from('expenses').insert({ ...row, created_by: session!.memberId })
-    setBusy(false)
-    if (error) return toast(navigator.onLine ? 'Could not save. Try again.' : 'You are offline. Try again with signal.')
-    toast(v.id ? 'Saved' : 'Expense added'); onClose()
-  }
-  const remove = async () => {
-    const { error } = await supabase.from('expenses').delete().eq('id', v.id!)
-    if (error) return toast('Could not delete.')
-    toast('Removed'); onClose()
-  }
-
-  return (
-    <Sheet title={v.id ? 'Edit expense' : 'Add an expense'} onClose={onClose} onSubmit={save} busy={busy}
-      extra={v.id && <button type="button" className="icon-btn" onClick={remove}>Delete this expense</button>}>
-      <Field label="What" id="eWhat"><input id="eWhat" required value={v.description ?? ''} onChange={(e) => setV({ ...v, description: e.target.value })} placeholder="e.g. Taxi to the Great Wall" /></Field>
-      <div className="row">
-        <Field label="Amount (¥)" id="eAmt"><input id="eAmt" type="number" min="0.01" step="0.01" inputMode="decimal" required value={v.amount ?? ''} onChange={(e) => setV({ ...v, amount: e.target.value as unknown as number })} /></Field>
-        <Field label="Paid by" id="ePaid"><select id="ePaid" value={v.paid_by} onChange={(e) => setV({ ...v, paid_by: e.target.value })}>{data.members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select></Field>
-      </div>
-      <div className="field">
-        <div className="row between"><label>Split between ({split.size})</label>
-          <div className="row"><button type="button" className="icon-btn" onClick={() => setV({ ...v, split_with: data.members.map((m) => m.id) })}>All</button><button type="button" className="icon-btn" onClick={() => setV({ ...v, split_with: [] })}>None</button></div>
-        </div>
-        <div className="filters" style={{ flexWrap: 'wrap' }}>
-          {data.members.map((m) => <button type="button" key={m.id} aria-pressed={split.has(m.id)} onClick={() => toggle(m.id)}>{m.name}</button>)}
-        </div>
-      </div>
-    </Sheet>
-  )
-}
-
-/* ------------------------------------------------------------ chat */
-
-function Chat({ back }: { back: JSX.Element }) {
-  const { data, session, memberName } = useStore()
-  const toast = useToast()
-  const [text, setText] = useState('')
-  const end = useRef<HTMLDivElement>(null)
-  useEffect(() => { end.current?.scrollIntoView({ block: 'end' }) }, [data.messages.length])
-
-  const send = async () => {
-    const body = text.trim()
-    if (!body) return
-    setText('')
-    const { error } = await supabase.from('messages').insert({ trip_id: session!.tripId, member_id: session!.memberId, body })
-    if (error) { setText(body); toast(navigator.onLine ? 'Message not sent. Try again.' : 'You are offline. Send it again with signal.') }
-  }
-
-  return (
-    <div className="chatwrap">
-      <div style={{ marginBottom: 10 }}>{back}</div>
-      <div className="msgs">
-        {data.messages.length === 0 && <div className="empty">No messages yet. Say hi!</div>}
-        {data.messages.map((m) => m.kind === 'bolleke'
-          ? <div className="msg sys" key={m.id}>📍 {m.body} · {fmtTime(m.created_at, Intl.DateTimeFormat().resolvedOptions().timeZone)} · <a href="#map" style={{ color: 'var(--gold)' }}>see map</a></div>
-          : <div className={`msg ${m.member_id === session!.memberId ? 'mine' : ''}`} key={m.id}>
-              {m.member_id !== session!.memberId && <div className="who">{memberName(m.member_id)}</div>}{m.body}
-            </div>)}
-        <div ref={end} />
-      </div>
-      <form className="composer" onSubmit={(e) => { e.preventDefault(); send() }}>
-        <input id="chatIn" value={text} onChange={(e) => setText(e.target.value)} placeholder="Message the group" autoComplete="off" />
-        <button className="btn sm" type="submit">Send</button>
-      </form>
-    </div>
-  )
-}
-
 /* ------------------------------------------------------------ settings */
 
 function Settings({ back }: { back: JSX.Element }) {
@@ -417,7 +297,7 @@ function Settings({ back }: { back: JSX.Element }) {
       <h2>Settings</h2>
       <div className="card stack">
         <div className="toggle">
-          <div><b>Notifications</b><div className="muted" style={{ fontSize: 13 }}>Chat messages and Bolleke alerts</div></div>
+          <div><b>Notifications</b><div className="muted" style={{ fontSize: 13 }}>Chat, Bolleke, the morning summary and reminders</div></div>
           {support === 'ok' && (
             <button className={`btn sm ${pushOn ? 'ghost' : ''}`} onClick={async () => {
               try {

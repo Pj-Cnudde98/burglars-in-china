@@ -1,0 +1,14 @@
+// How Cloudflare serves the app: the built files in dist/, nothing else.
+// There is no Worker code; all data goes from the phone straight to Supabase.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "burglars-in-china",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Any unknown path gets index.html, so the installed app always opens.
+    "not_found_handling": "single-page-application"
+  },
+  // Lets Cloudflare build a preview for each pull request (`wrangler preview`).
+  "previews": {}
+}
