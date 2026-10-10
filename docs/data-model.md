@@ -144,6 +144,13 @@ flowchart LR
 - **`transport` stores `timestamptz` plus a time zone name** per end, so a flight from Brussels to Beijing shows each time in its local zone.
 - **Ticket files are not in a table.** `transport.file_path` points to an object in the `tickets` Storage bucket.
 
+## Tables added later
+
+| Table / column | Migration | Purpose |
+|---|---|---|
+| `trips.timezone` | 0002 | Zone in which trip days start; the morning summary goes out at 08:00 there. Default `Asia/Shanghai`. |
+| `push_log (trip_id, key)` | 0002 | One row per timed notification already sent. Not readable through the API. |
+
 ## Helper functions
 
 | Function | Type | Purpose |

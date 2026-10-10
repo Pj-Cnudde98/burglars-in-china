@@ -108,6 +108,35 @@ flowchart LR
     F --> H["tap → open /#chat or /#map"]
 ```
 
+## 5b. Morning summary
+
+Nothing in the app triggers this one. A schedule inside Postgres calls the `tick` function every 5 minutes, and the function decides whether anything is due.
+
+```mermaid
+sequenceDiagram
+    participant Cron as pg_cron (every 5 min)
+    participant EF as Edge Function tick
+    participant DB as Postgres
+    participant OM as Open-Meteo
+    participant PS as Push service
+    participant P as 📱 Everyone
+
+    Cron->>EF: POST + x-webhook-secret (pg_net)
+    EF->>DB: trips (with timezone)
+    Note over EF: For each trip that is under way:<br/>is it 08:00 to 11:00 trip time?
+    EF->>DB: insert push_log (trip, "daily:2027-04-03")
+    alt already there
+        DB-->>EF: duplicate key, skip
+    else first run today
+        EF->>DB: today's stay, events, departures
+        EF->>OM: forecast for the stay
+        EF->>PS: Web Push to all subscriptions
+        PS-->>P: "Day 3 of 20 · Xi'an · ☀ 21°/9°"
+    end
+```
+
+The `push_log` insert is the lock: whichever run inserts the key sends the notification, and later runs see the duplicate and skip. The three-hour window means a missed run at 08:00 is caught by the next one.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

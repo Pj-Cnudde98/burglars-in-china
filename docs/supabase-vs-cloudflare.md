@@ -95,7 +95,10 @@ flowchart TB
 | **Realtime** | The phone subscribes to `postgres_changes` on 9 tables, filtered by `trip_id` | `store.tsx` |
 | **Storage** | Private `tickets` bucket. Files are stored at `<trip_id>/<file>`. | [tickets.ts](../src/lib/tickets.ts) |
 | **Database webhook** | Calls the Edge Function on each new `messages` row | Dashboard config (see README step 3.4) |
-| **Edge Function** | Looks up subscribers, sends Web Push, removes dead subscriptions | [notify/index.ts](../supabase/functions/notify/index.ts) |
+| **Edge Function `notify`** | Looks up subscribers, sends Web Push, removes dead subscriptions | [notify/index.ts](../supabase/functions/notify/index.ts) |
+| **Edge Function `tick`** | Timed notifications: the morning summary | [tick/index.ts](../supabase/functions/tick/index.ts) |
+| **Cron (`pg_cron` + `pg_net`)** | Calls `tick` every 5 minutes | [0002_scheduled_push.sql](../supabase/migrations/0002_scheduled_push.sql) |
+| **Vault** | Holds the project URL and webhook secret the schedule uses | Set by hand (README step 3b) |
 
 ## Everything else (neither Supabase nor Cloudflare)
 

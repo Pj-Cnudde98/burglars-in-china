@@ -29,6 +29,7 @@ flowchart LR
 | `locations` | trip members | own row | own row |
 | `push_subscriptions` | own | own | own |
 | Storage `tickets` | trip members | admins | admins |
+| `push_log` | nobody via API | nobody via API | nobody via API |
 
 ## Design choices
 

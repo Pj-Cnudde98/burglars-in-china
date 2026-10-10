@@ -51,6 +51,20 @@ Open the address it prints, join with your trip code and name, then go to **Info
    - Type **Supabase Edge Functions**, function `notify`
    - Add the HTTP header `x-webhook-secret` with the same `WEBHOOK_SECRET` value
 
+### 3b. Morning summary
+
+Every trip day at 08:00 China time, everyone gets a notification with the city, the weather and the day's plan.
+
+1. Deploy the function: `supabase functions deploy tick --no-verify-jwt`
+2. In the **SQL Editor**, store the two values the schedule needs (replace both placeholders):
+   ```sql
+   select vault.create_secret('https://YOUR-PROJECT.supabase.co', 'project_url');
+   select vault.create_secret('the-same-WEBHOOK_SECRET-as-step-3', 'webhook_secret');
+   ```
+3. Paste and run `supabase/migrations/0002_scheduled_push.sql`. It adds a schedule that calls the function every 5 minutes.
+
+To check that it runs, look at **Integrations → Cron → Jobs** and at the `tick` function's logs.
+
 ### 4. Put it online (Cloudflare Pages)
 
 1. Create a free account at [cloudflare.com](https://dash.cloudflare.com), then go to **Workers & Pages → Create → Pages → Connect to Git** and pick this repository.
@@ -90,5 +104,8 @@ src/
 supabase/
   migrations/0001_init.sql   tables, security rules, join/admin functions
   seed.sql                   sample trip (placeholders)
-  functions/notify/          sends push notifications
+  migrations/0002_…          later additions, run in order
+  functions/notify/          sends push notifications for chat and Bolleke
+  functions/tick/            timed notifications (morning summary), run by a schedule
+  functions/_shared/         code both functions use
 ```
