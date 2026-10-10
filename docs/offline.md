@@ -23,6 +23,7 @@ flowchart LR
 | Trip rows (plan, hotels, food, expenses, chat) | `localStorage` JSON snapshot | Written after every refresh; read on start | [store.tsx](../src/lib/store.tsx) |
 | Ticket files | Cache Storage `bic-tickets` | Downloaded when a transport row has a file, then served from cache | [tickets.ts](../src/lib/tickets.ts) |
 | Shared photos | Cache Storage `bic-media` | Each photo or preview is kept after it has been shown once | [media.ts](../src/lib/media.ts) |
+| Exchange rates | `localStorage` `bic-rates` | Last fetched rates; refreshed when older than 6 hours | [money.ts](../src/lib/money.ts) |
 | Map tiles | Cache Storage `map-tiles` | CacheFirst: tiles you have looked at | `sw.ts` |
 | Weather | Cache Storage `weather` | StaleWhileRevalidate | `sw.ts` |
 | Brush font | Cache Storage `fonts` | CacheFirst | `sw.ts` |

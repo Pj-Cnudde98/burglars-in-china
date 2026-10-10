@@ -6,10 +6,10 @@ The trip app for our 20-day China trip. It's a web app that you add to your home
 - **Plan**: a day-by-day timeline plus a calendar of the whole trip
 - **Bolleke**: one tap shares your live location with the group for 15 minutes and sends everyone a notification
 - **Food**: everyone adds restaurants and votes thumbs up or down, ranked per city
-- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses, group chat with photos and polls, a shared photo and video album
+- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses with a currency converter and settle-up, group chat with photos and polls, a shared photo and video album
 - **Offline**: the schedule, hotels and tickets are saved on the phone and work without signal
 
-Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, and Open-Meteo weather. It uses no Google services, so it works in China.
+Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, Open-Meteo weather, and Frankfurter exchange rates. It uses no Google services, so it works in China.
 
 Design docs with architecture diagrams, data model and flows are in [docs/](docs/README.md).
 
@@ -95,11 +95,12 @@ Every push to `main` redeploys automatically.
 ```
 src/
   App.tsx            tabs and routing (#today, #plan, #map, #food, #info, #chat…)
-  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Chat, Album
+  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Money, Chat, Album
   lib/store.tsx      loads trip data, saves it on the phone, live updates
   lib/bolleke.ts     15-minute live location sharing
   lib/push.ts        notification subscribe/unsubscribe
   lib/tickets.ts     ticket files, cached for offline
+  lib/money.ts       balances, settle-up, exchange rates
   lib/media.ts       shared photos: shrink, upload, cache
   lib/gcj.ts         GPS → Chinese map grid conversion
   sw.ts              service worker: offline cache + notifications

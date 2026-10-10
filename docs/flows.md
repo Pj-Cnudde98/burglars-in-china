@@ -204,6 +204,21 @@ flowchart TB
 
 The album does not send notifications: it would be one per photo. "Save" hands the photo to the phone's share sheet (Save to Photos); for a video it opens a download link.
 
+## 5f. Expenses: currencies and settle-up
+
+```mermaid
+flowchart LR
+    add["Add expense<br/>€20, paid by Jan,<br/>split 4 ways"] --> rate["Rate fixed at save<br/>€1 = ¥7.50"]
+    rate --> yuan["Counted as ¥150"]
+    yuan --> bal["Balances per member<br/>paid − own share"]
+    bal --> settle["Settle up:<br/>biggest debtor pays<br/>biggest creditor, repeat"]
+    settle --> list["An pays Jan ¥125<br/>An pays Piet ¥65"]
+    list -- "tap Paid" --> row["expenses row<br/>is_settlement = true"]
+    row --> bal
+```
+
+Balances are always in yuan. The rate is stored with each expense, so yesterday's dinner does not change value when the euro moves. A settle-up payment is stored as an expense "paid by the debtor, for the creditor", which cancels the debt with the same arithmetic as everything else. The converter and the "≈ €" amounts use the latest rate, kept on the phone for offline use.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

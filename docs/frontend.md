@@ -18,8 +18,10 @@ flowchart TB
     App --> Plan["screens/Plan"]
     App --> Map["screens/MapScreen"]
     App --> Food["screens/Food"]
-    App --> Info["screens/Info<br/>hotels · transport · money<br/>settings"]
+    App --> Info["screens/Info<br/>hotels · transport<br/>settings"]
     Info --> Chat["screens/Chat<br/>text · photos · polls"]
+    Info --> Money["screens/Money<br/>expenses · converter · settle-up"]
+    Money --> money["lib/money"]
     Info --> Album["screens/Album<br/>photos · videos"]
     Album --> media
     Chat --> media["lib/media"]
@@ -77,6 +79,7 @@ Screens read from `data` and write directly with `supabase.from(...)`. The Realt
 | [push.ts](../src/lib/push.ts) | Capability check, subscribe/unsubscribe |
 | [tickets.ts](../src/lib/tickets.ts) | Upload, download, offline cache |
 | [media.ts](../src/lib/media.ts) | Shared photos and videos: shrink photos on the phone, upload with a preview, cache what was shown, signed links for video |
+| [money.ts](../src/lib/money.ts) | Balances, settle-up payments, exchange rates |
 | [weather.ts](../src/lib/weather.ts) | Open-Meteo hook and icon mapping |
 | [gcj.ts](../src/lib/gcj.ts) | WGS-84 → GCJ-02 |
 | [trip.ts](../src/lib/trip.ts), [dates.ts](../src/lib/dates.ts) | Current city/day logic, date helpers |

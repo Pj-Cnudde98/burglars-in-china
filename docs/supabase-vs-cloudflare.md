@@ -106,6 +106,7 @@ flowchart TB
 |---|---|---|
 | Amap / AutoNavi tiles | Map imagery that works in China | Phone, via Leaflet |
 | Open-Meteo | 5-day weather forecast | Phone, [weather.ts](../src/lib/weather.ts) |
+| Frankfurter | Exchange rates (European Central Bank, daily) | Phone, [money.ts](../src/lib/money.ts) |
 | Apple / Google / Mozilla push services | Final hop of a notification to the phone | Edge Function |
 
 ## Failure modes

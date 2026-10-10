@@ -25,6 +25,7 @@ export type Vote = { restaurant_id: string; member_id: string; trip_id: string; 
 export type Expense = {
   id: string; trip_id: string; description: string; amount: number; currency: string
   paid_by: string; split_with: string[]; created_by: string | null; created_at: string
+  rate: number; is_settlement: boolean
 }
 export type Message = {
   id: string; trip_id: string; member_id: string | null; kind: 'text' | 'bolleke' | 'image' | 'poll'; body: string; created_at: string

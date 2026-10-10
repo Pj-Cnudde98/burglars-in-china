@@ -154,6 +154,7 @@ flowchart LR
 | `poll_votes (message_id, member_id, choice)` | 0003 | One answer per member per poll. `choice` is the position in `poll_options`; `null` means the vote was taken back (same reason as `votes.value = 0`). Published to Realtime. |
 | Storage bucket `media` | 0003 | Photos shared by the group, at `<trip_id>/<folder>/<file>`. 50 MB per file. |
 | `album_items` | 0004 | One row per photo or video in the shared album: `kind`, `path` and `thumb_path` in the `media` bucket, `caption`, `taken_at`. Published to Realtime. |
+| `expenses.rate`, `expenses.is_settlement` | 0005 | `rate` is yuan per unit of `currency`, fixed when the expense is saved (1 for CNY). `is_settlement` marks a repayment from `paid_by` to the one member in `split_with`; it moves balances but is left out of the group total. |
 
 ## Helper functions
 
