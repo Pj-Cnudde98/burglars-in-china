@@ -37,6 +37,8 @@ flowchart LR
 | PWA / offline | `vite-plugin-pwa` (Workbox service worker in [src/sw.ts](../src/sw.ts)) |
 | Map | Leaflet + Amap (AutoNavi) tiles, GCJ-02 conversion |
 | Weather | Open-Meteo (no key) |
+| Exchange rates | Frankfurter (no key) |
+| Translation | MyMemory (no key) + the phone's speech features |
 | Backend | Supabase: Postgres, Auth, Realtime, Storage, Edge Functions |
 | Hosting | Cloudflare Pages |
 | Notifications | Web Push (VAPID) from a Supabase Edge Function |

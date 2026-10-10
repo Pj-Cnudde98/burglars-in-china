@@ -219,6 +219,27 @@ flowchart LR
 
 Balances are always in yuan. The rate is stored with each expense, so yesterday's dinner does not change value when the euro moves. A settle-up payment is stored as an expense "paid by the debtor, for the creditor", which cancels the debt with the same arithmetic as everything else. The converter and the "≈ €" amounts use the latest rate, kept on the phone for offline use.
 
+## 5g. Translate
+
+This feature uses no Supabase at all: it runs on the phone and one public API.
+
+```mermaid
+flowchart LR
+    say["🎤 Speak<br/>(browser speech recognition,<br/>where available)"] --> text["Sentence"]
+    type["⌨️ Type, or the keyboard's<br/>microphone key"] --> text
+    text --> known{"Translated<br/>before?"}
+    known -- yes --> hist[("localStorage<br/>last 30")]
+    known -- no --> mm["MyMemory API"] --> hist
+    hist --> out["Result in big type"]
+    out --> play["🔊 Play<br/>(phone's own voice)"]
+    out --> show["Show big<br/>full-screen card"]
+    out --> swap["'Their answer':<br/>swap direction, listen in 中文"]
+    book["Phrasebook<br/>(built in, 42 phrases)"] --> play
+    book --> show
+```
+
+Voice input depends on the browser: Chrome on Android has it (and sends the audio to Google, so it needs the eSIM's data route); an installed iPhone app usually does not, in which case the button is hidden and a hint points to the keyboard's microphone key.
+
 ## 6. Enabling notifications on a phone
 
 ```mermaid

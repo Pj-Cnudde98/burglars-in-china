@@ -9,6 +9,7 @@ import type { Stay, Transport } from '../lib/types'
 import Money from './Money'
 import Chat from './Chat'
 import Album from './Album'
+import Translate from './Translate'
 
 export default function Info({ sub, go }: { sub: string | null; go: (h: string) => void }) {
   const { data, syncedAt } = useStore()
@@ -26,6 +27,7 @@ export default function Info({ sub, go }: { sub: string | null; go: (h: string) 
             <button className="tile" onClick={() => go('money')}><span className="g">钱</span><b>Expenses</b><span>Who owes who · converter</span></button>
             <button className="tile" onClick={() => go('chat')}><span className="g">聊</span><b>Group chat</b><span>{unread} messages</span></button>
             <button className="tile" onClick={() => go('album')}><span className="g">影</span><b>Album</b><span>{data.album.length} photos and videos</span></button>
+            <button className="tile" onClick={() => go('translate')}><span className="g">译</span><b>Translate</b><span>Voice · phrasebook</span></button>
           </div>
           <button className="card row between" style={{ textAlign: 'left' }} onClick={() => go('settings')}>
             <div><b>Settings</b><div className="muted" style={{ fontSize: 13 }}>Notifications, admin, sign out</div></div><span className="muted">›</span>
@@ -40,6 +42,7 @@ export default function Info({ sub, go }: { sub: string | null; go: (h: string) 
       {sub === 'money' && <Money back={back} />}
       {sub === 'chat' && <Chat back={back} />}
       {sub === 'album' && <Album back={back} />}
+      {sub === 'translate' && <Translate back={back} />}
       {sub === 'settings' && <Settings back={back} />}
     </main>
   )

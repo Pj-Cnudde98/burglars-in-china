@@ -52,6 +52,8 @@ flowchart TD
 | Weather | ◐ | Last forecast |
 | Food list, expenses, chat history | ✅ read | From snapshot |
 | Album | ◐ | Previews and photos you have opened. Videos need signal. |
+| Phrasebook, playing Chinese out loud | ✅ | Built into the app; uses the phone's own voices |
+| Translating new sentences | ❌ | Needs signal. Sentences translated before are answered from the phone. |
 | Adding food, votes, expenses, chat | ❌ | Needs Supabase. There is no write queue. |
 | Bolleke | ❌ | Needs Supabase |
 | Notifications | ❌ | Need data connection |

@@ -6,10 +6,10 @@ The trip app for our 20-day China trip. It's a web app that you add to your home
 - **Plan**: a day-by-day timeline plus a calendar of the whole trip
 - **Bolleke**: one tap shares your live location with the group for 15 minutes and sends everyone a notification
 - **Food**: everyone adds restaurants and votes thumbs up or down, ranked per city
-- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses with a currency converter and settle-up, group chat with photos and polls, a shared photo and video album
+- **Info**: hotels with Chinese taxi cards, flights and trains with ticket files, shared expenses with a currency converter and settle-up, group chat with photos and polls, a shared photo and video album, a translator with voice and an offline phrasebook
 - **Offline**: the schedule, hotels and tickets are saved on the phone and work without signal
 
-Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, Open-Meteo weather, and Frankfurter exchange rates. It uses no Google services, so it works in China.
+Built with React + Vite (PWA), Supabase (database, live updates, file storage, push function), Leaflet with Amap tiles, Open-Meteo weather, Frankfurter exchange rates, and MyMemory translation. It uses no Google services, so it works in China.
 
 Design docs with architecture diagrams, data model and flows are in [docs/](docs/README.md).
 
@@ -87,6 +87,7 @@ Every push to `main` redeploys automatically.
 - **Bolleke works while the app is open.** Web apps can't read your location in the background, so keep the screen on while sharing. The app tries to keep it awake for you.
 - **Use your roaming eSIM's data** in China, not local Wi-Fi. That way Supabase, notifications (Android uses Google's push service) and the weather all work.
 - **Album space**: Supabase's free plan stores 1 GB in total and at most 50 MB per file. Photos are shrunk to about 1 MB before upload, so there is room for several hundred. Videos are uploaded as they are, so keep them short.
+- **Translating by voice**: the 🎤 button shows where the browser can listen (Chrome on Android). On iPhone, tap the microphone key on the keyboard instead. Playing the Chinese out loud and the phrasebook work everywhere, also offline. Free translations are limited to about 5,000 characters a day per connection.
 - **Admins**: anyone who enters the admin PIN on their phone can edit the plan, hotels and tickets. Share the PIN with the other admins only.
 - **Map**: Amap tiles use the Chinese GCJ-02 grid. The app converts GPS positions, so pins land in the right spot.
 
@@ -95,11 +96,13 @@ Every push to `main` redeploys automatically.
 ```
 src/
   App.tsx            tabs and routing (#today, #plan, #map, #food, #info, #chat…)
-  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Money, Chat, Album
+  screens/           Login, Today, Plan, MapScreen (Bolleke), Food, Info (hotels, transport, money, settings), Money, Chat, Album, Translate
   lib/store.tsx      loads trip data, saves it on the phone, live updates
   lib/bolleke.ts     15-minute live location sharing
   lib/push.ts        notification subscribe/unsubscribe
   lib/tickets.ts     ticket files, cached for offline
+  lib/translate.ts   translation, speaking and listening
+  lib/phrases.ts     the offline phrasebook
   lib/money.ts       balances, settle-up, exchange rates
   lib/media.ts       shared photos: shrink, upload, cache
   lib/gcj.ts         GPS → Chinese map grid conversion
